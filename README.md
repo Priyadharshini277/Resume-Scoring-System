@@ -38,13 +38,13 @@ An AI-based web application that analyzes resumes and provides a score along wit
 
 ## 📂 Project Structure
 
+```
 Resume-Scoring-System/
 │
 ├── app.py
 ├── templates/
 ├── uploads/
-
----
+```
 
 ## 🔗 Other Project
 
