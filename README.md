@@ -48,7 +48,7 @@ Resume-Scoring-System/
 
 ## 🔗 Other Project
 
-👉 AI Interior Designer: https://github.com/Priyadharshini277/AI-Interior-Design
+👉 AI Interior Designer: https://github.com/Priyadharshini277/AI-Interior-Design-
 
 ---
 
