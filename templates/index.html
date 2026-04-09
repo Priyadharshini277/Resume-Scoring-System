@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Screener</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f7f9fc, #eef3ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            width: 500px;
+            padding: 40px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            color: #2f2f2f;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #7a7a7a;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* UPLOAD BOX */
+        .upload-box {
+            border: 2px dashed #9aa9ff;
+            padding: 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: #5a6cff;
+            font-weight: 500;
+            margin-bottom: 20px;
+            background: #f8faff;
+        }
+
+        .upload-box:hover {
+            background: #eef2ff;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* FILE LIST */
+        .file-list {
+            background: #f9fafc;
+            border-radius: 10px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .remove {
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        /* BUTTON */
+        .btn {
+            background: linear-gradient(135deg, #7c8cff, #5a6cff);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1>Resume Screener</h1>
+    <div class="subtitle">
+        Upload resumes and analyze candidates easily
+    </div>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+
+        <label class="upload-box">
+            📂 Click to Add Resume
+            <input type="file" id="fileInput">
+        </label>
+
+        <div id="fileList" class="file-list">
+            <div class="empty">No files selected</div>
+        </div>
+
+        <input type="file" name="resumes" id="finalFiles" multiple hidden>
+
+        <button class="btn">Upload & Analyze</button>
+
+    </form>
+
+</div>
+
+<script>
+const fileInput = document.getElementById("fileInput");
+const fileList = document.getElementById("fileList");
+const finalFiles = document.getElementById("finalFiles");
+
+let filesArray = [];
+
+fileInput.addEventListener("change", function() {
+
+    for (let i = 0; i < this.files.length; i++) {
+        filesArray.push(this.files[i]);
+    }
+
+    renderFiles();
+});
+
+function renderFiles() {
+    fileList.innerHTML = "";
+
+    if (filesArray.length === 0) {
+        fileList.innerHTML = '<div class="empty">No files selected</div>';
+        return;
+    }
+
+    let dt = new DataTransfer();
+
+    filesArray.forEach((file, index) => {
+        dt.items.add(file);
+
+        let div = document.createElement("div");
+        div.className = "file-item";
+
+        div.innerHTML = `
+            <span>📄 ${file.name}</span>
+            <span class="remove" onclick="removeFile(${index})">Remove</span>
+        `;
+
+        fileList.appendChild(div);
+    });
+
+    finalFiles.files = dt.files;
+}
+
+function removeFile(index) {
+    filesArray.splice(index, 1);
+    renderFiles();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Dashboard</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial;
+            background: linear-gradient(135deg, #eaf0f8, #dce6f5);
+        }
+
+        /* Header */
+        .header {
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .main {
+            padding: 30px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 20px;
+            color: #2c2c2c;
+        }
+
+        /* TOP BANNER */
+        .top-banner {
+            background: linear-gradient(135deg, #4a6cf7, #6c8cff);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 900px;
+            margin: 0 auto 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Controls */
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            margin: 5px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            background: #e0e5f5;
+            transition: 0.3s;
+        }
+
+        .controls button:hover {
+            background: #4a6cf7;
+            color: white;
+        }
+
+        /* Card */
+        .card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 950px;
+            margin: auto;
+            box-shadow: 0px 12px 35px rgba(0,0,0,0.08);
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: #4a6cf7;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr {
+            transition: 0.2s;
+        }
+
+        tr:hover {
+            background: #f0f4ff;
+            transform: scale(1.01);
+        }
+
+        /* Score Bar */
+        .bar {
+            height: 6px;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a6cf7, #6c8cff);
+            width: 0;
+            animation: loadBar 1s forwards;
+        }
+
+        @keyframes loadBar {
+            from { width: 0; }
+        }
+
+        /* Status */
+        .selected { color: #28a745; font-weight: 500; }
+        .rejected { color: #f44336; font-weight: 500; }
+
+        /* Button */
+        .btn {
+            display: block;
+            margin: 25px auto;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #4a6cf7, #6c8cff);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.1);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header">Resume Screening System</div>
+
+<div class="main">
+
+<div class="title">📊 Resume Dashboard</div>
+
+<!-- TOP -->
+<div class="top-banner">
+    <h2>🏆 Top Candidate</h2>
+    <p>{{ results[0].name }}</p>
+    <p>Score: {{ results[0].score }}%</p>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+    <button onclick="sortTable()">Sort by Score</button>
+    <button onclick="filterSelected()">Show Selected</button>
+    <button onclick="resetTable()">Reset</button>
+</div>
+
+<!-- TABLE -->
+<div class="card">
+
+<table id="table">
+<tr>
+    <th>Rank</th>
+    <th>Name</th>
+    <th>Score</th>
+    <th>Status</th>
+</tr>
+
+{% for r in results %}
+<tr data-score="{{ r.score }}" data-status="{{ r.status }}">
+    <td>{{ loop.index }}</td>
+    <td>{{ r.name }}</td>
+
+    <td>
+        {{ r.score }}%
+        <div class="bar">
+            <div class="fill" style="width: {{ r.score }}%"></div>
+        </div>
+    </td>
+
+    <td>
+        {% if r.status == "SHORTLISTED" %}
+            <span class="selected">✔ Selected</span>
+        {% else %}
+            <span class="rejected">✖ Rejected</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+<a href="/" class="btn">⬅ Upload More</a>
+
+</div>
+
+<script>
+
+let asc = false;
+
+function sortTable() {
+    let rows = Array.from(document.querySelectorAll("#table tr")).slice(1);
+
+    rows.sort((a,b) => {
+        let s1 = parseFloat(a.dataset.score);
+        let s2 = parseFloat(b.dataset.score);
+        return asc ? s1 - s2 : s2 - s1;
+    });
+
+    asc = !asc;
+
+    let table = document.getElementById("table");
+    rows.forEach(r => table.appendChild(r));
+}
+
+function filterSelected() {
+    document.querySelectorAll("#table tr").forEach((row,i)=>{
+        if(i===0) return;
+        row.style.display = row.dataset.status.includes("SHORT") ? "" : "none";
+    });
+}
+
+function resetTable() {
+    location.reload();
+}
+
+</script>
+
+</body>
+</html>
